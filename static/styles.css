@@ -71,7 +71,7 @@ strong {
     display: block;
     width: 100%;
     padding: 12px;
-    background-color: #9966ff; /* Updated color */
+    background-color: #9966ff;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -80,5 +80,5 @@ strong {
 }
 
 .log-button:hover {
-    background-color: #7a4dff; /* Darker shade on hover */
+    background-color: #7a4dff;
 }

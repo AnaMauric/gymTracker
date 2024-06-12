@@ -120,7 +120,7 @@ def get_all_todo():
     return todo
 
 
-app = VersionedFastAPI(app, version_format='{major}', prefix_format="/v{major}")'''
+app = VersionedFastAPI(app, version_format='{major}', prefix_format="/v{major}")
 
 
 
@@ -248,5 +248,98 @@ versioned_api_app = VersionedFastAPI(api_app, version_format='{major}', prefix_f
 # Glavna aplikacija, ki združuje statični del in API
 app = FastAPI()
 app.mount("/", static_app)
-app.mount("/api", versioned_api_app)
+app.mount("/api", versioned_api_app)'''
 
+from fastapi import FastAPI, HTTPException, status
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.requests import Request
+from database import engine, Base, ToDo
+from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_versioning import VersionedFastAPI, version
+import shemas
+
+Base.metadata.create_all(engine)
+
+# Aplikacija za serviranje HTML in statičnih datotek
+static_app = FastAPI()
+
+static_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+static_app.mount("/static", StaticFiles(directory="static"), name="static")
+
+templates = Jinja2Templates(directory="templates")
+
+@static_app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+# API aplikacija
+api_app = FastAPI()
+
+@api_app.post("/dodaj")
+@version(1)
+def dodaj_vajo(todo: shemas.ToDo):
+    session = Session(bind=engine, expire_on_commit=False)
+    todoDB = ToDo(task=todo.task, sets=todo.sets)
+    session.add(todoDB)
+    session.commit()
+    id = todoDB.id
+    session.close()
+    return f"Nov ToDo id {id}"
+
+@api_app.delete("/delete/{id}")
+@version(1)
+def delete_vajo(id: int):
+    session = Session(bind=engine, expire_on_commit=False)
+    todo = session.query(ToDo).filter_by(task="searched_task").first()  # Namesto "searched_task" vstavi ime iskane vaje
+    if todo:
+        session.delete(todo)
+        session.commit()
+        session.close()
+    else:
+        session.close()
+        raise HTTPException(status_code=404, detail=f"Vaja ne obstaja")
+    return f"Izbrisana vaja {id}"
+
+@api_app.get("/get/{id}")
+@version(1)
+def get_vajo(id: int):
+    session = Session(bind=engine, expire_on_commit=False)
+    todo = session.query(ToDo).filter_by(task="searched_task").first()  # Namesto "searched_task" vstavi ime iskane vaje
+    session.close()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Vaja ne obstaja")
+    return todo
+
+@api_app.get("/list", status_code=status.HTTP_200_OK)
+@version(1)
+def get_vse_vaje():
+    session = Session(bind=engine, expire_on_commit=False)
+    vaje = session.query(ToDo).all()
+    session.close()
+    return vaje
+
+@api_app.delete("/delete/all")
+@version(1)
+def delete_vse_vaje():
+    session = Session(bind=engine, expire_on_commit=False)
+    session.query(ToDo).delete()
+    session.commit()
+    session.close()
+    return "Vse vaje izbrisane"
+
+# Uporabi VersionedFastAPI za API aplikacijo
+versioned_api_app = VersionedFastAPI(api_app, version_format='{major}', prefix_format="/v{major}")
+
+# Glavna aplikacija, ki združuje statični del in API
+app = FastAPI()
+app.mount("/", static_app)
+app.mount("/api", versioned_api_app)

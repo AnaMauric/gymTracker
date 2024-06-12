@@ -95,3 +95,108 @@ function logWorkout() {
     // Update displayed exercises after logging workout
     displayExercises();
 }
+
+// Function to fetch and display exercise details
+async function showExercise() {
+    // Get the exercise name from the input field
+    var exerciseName = document.getElementById('search').value.trim();
+
+    if (exerciseName === '') {
+        alert('Please enter an exercise name.');
+        return;
+    }
+
+    try {
+        // Make a fetch request to the backend API
+        const response = await fetch(`/api/get/${exerciseName}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            // Display the exercise details in the designated area
+            var exerciseDetails = document.getElementById('exerciseDetails');
+            exerciseDetails.innerHTML = `<strong>Name:</strong> ${data.task}, <strong>Sets:</strong> ${data.sets}`;
+        } else {
+            // Handle error responses from the API
+            const errorMessage = await response.text();
+            alert(`Failed to fetch exercise details: ${errorMessage}`);
+        }
+    } catch (error) {
+        console.error('Error fetching exercise details:', error);
+        alert('An error occurred while fetching exercise details. Please try again later.');
+    }
+}
+
+// Function to delete exercise
+async function deleteExercise() {
+    var exerciseName = document.getElementById('search').value.trim();
+
+    if (exerciseName === '') {
+        alert('Please enter an exercise name.');
+        return;
+    }
+
+    try {
+        // Make a fetch request to the backend API to delete the exercise
+        const response = await fetch(`/api/delete/${exerciseName}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            alert('Exercise deleted successfully.');
+        } else {
+            // Handle error responses from the API
+            const errorMessage = await response.text();
+            alert(`Failed to delete exercise: ${errorMessage}`);
+        }
+    } catch (error) {
+        console.error('Error deleting exercise:', error);
+        alert('An error occurred while deleting exercise. Please try again later.');
+    }
+}
+
+// Function to fetch and display all exercises
+async function showWorkout() {
+    try {
+        // Make a fetch request to the backend API to get all exercises
+        const response = await fetch('/api/list');
+        const data = await response.json();
+
+        if (response.ok) {
+            // Display the list of exercises in the designated area
+            var exerciseList = document.getElementById('exerciseList');
+            exerciseList.innerHTML = '<strong>Logged Exercises:</strong><br>';
+
+            data.forEach(function(exercise) {
+                exerciseList.innerHTML += `<div>${exercise.task} - Sets: ${exercise.sets}</div>`;
+            });
+        } else {
+            // Handle error responses from the API
+            const errorMessage = await response.text();
+            alert(`Failed to fetch exercises: ${errorMessage}`);
+        }
+    } catch (error) {
+        console.error('Error fetching exercises:', error);
+        alert('An error occurred while fetching exercises. Please try again later.');
+    }
+}
+
+// Function to delete all exercises
+async function deleteWorkout() {
+    try {
+        // Make a fetch request to the backend API to delete all exercises
+        const response = await fetch('/api/delete/all', {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            alert('All exercises deleted successfully.');
+        } else {
+            // Handle error responses from the API
+            const errorMessage = await response.text();
+            alert(`Failed to delete exercises: ${errorMessage}`);
+        }
+    } catch (error) {
+        console.error('Error deleting exercises:', error);
+        alert('An error occurred while deleting exercises. Please try again later.');
+    }
+}
