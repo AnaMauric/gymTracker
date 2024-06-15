@@ -219,7 +219,7 @@ function addExercise() {
 
     // Create exercise object
     var exerciseObj = {
-        name: exercise,
+        task: exercise,
         sets: sets,
         reps: []
     };
@@ -228,8 +228,10 @@ function addExercise() {
     loggedExercises.push(exerciseObj);
 
     // Clear input fields after adding exercise
-    exerciseInput.value = '';
-    setsInput.value = '';
+
+
+
+
 
     // Update the displayed exercises
     displayExercises();
@@ -250,7 +252,7 @@ function displayExercises() {
         exerciseItem.appendChild(exerciseName);
 
         // Display sets and reps
-        for (var i = 1; i <= exercise.sets; i++) {
+        for (var i = 1; i <= 1; i++) {
             var repsInput = document.createElement('input');
             repsInput.type = 'number';
             repsInput.placeholder = 'Reps for Set ' + i;
@@ -279,24 +281,68 @@ function displayExercises() {
 // Function to log workout
 function logWorkout() {
     var totalReps = 0;
-
+    var tabelaPonovitev=[];
     // Calculate total reps for all exercises
     loggedExercises.forEach(function(exercise) {
         exercise.reps.forEach(function(input) {
             var reps = parseInt(input.value.trim());
             if (!isNaN(reps) && reps > 0) {
                 totalReps += reps;
+                tabelaPonovitev.push(reps);
             }
+            else(alert(' 0 is not appropriate number of reps u lazy cunt'))
         });
     });
 
-    alert('Workout logged: Total reps = ' + totalReps);
+    var exerciseInput = document.getElementById('exercise');
+    var setsInput = document.getElementById('sets');
+
+    var exercise = exerciseInput.value;
+    var sets = parseInt(setsInput.value);
+
+    var telovadbaObj = {
+        task: exercise,
+        sets: sets,
+        reps: totalReps
+    };
+
+
+    pushObjectToApi('/api/add',telovadbaObj);
+
+
+    alert('Workout logged -  - - : Total reps = ' + totalReps);
 
     // Clear logged exercises array
     loggedExercises = [];
 
     // Update displayed exercises after logging workout
     displayExercises();
+}
+
+
+
+async function pushObjectToApi(url, object) {
+    try {
+        console.log(JSON.stringify(object))
+        const response = await fetch(url, {
+            method: 'POST', // or 'PUT' if you want to update an existing resource
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(object)
+
+            
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+
+        const responseData = await response.json();
+        console.log('Success:', responseData);
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 // Function to fetch and display exercise details

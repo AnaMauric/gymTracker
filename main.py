@@ -258,6 +258,7 @@ api_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+ 
 
 
 @api_app.post("/add")
@@ -269,7 +270,7 @@ def add_exercise(todo: ToDo):
         db.add(todo_db)
         db.commit()
         db.refresh(todo_db)
-        return {"id": todo_db.id, "task": todo_db.task, "sets": todo_db.sets, "reps": todo_db.reps}
+        return {"task": todo_db.task, "sets": todo_db.sets, "reps": todo_db.reps}
     finally:
         db.close()
 

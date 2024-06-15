@@ -28,11 +28,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
-class ToDo(Base):
+class ToDo_t(Base):
     __tablename__ = "exercises"
 
     id = Column(Integer, primary_key=True, index=True)
-    task = Column(String, index=True)
+    task = Column(String, index=True, primary_key=True)
     sets = Column(Integer)
-    reps = Column(JSON)
+    reps = Column(Integer)
 

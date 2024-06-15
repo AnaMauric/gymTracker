@@ -16,15 +16,21 @@ class ToDo(BaseModel):
 
 from pydantic import BaseModel
 from typing import List
+from sqlalchemy.orm import mapper 
+
 
 
 class ToDo(BaseModel):
     task: str
     sets: int
-    reps: List[int]
+    reps: int
+
+
+class UserInDB(ToDo):
+    id: int
 
     class Config:
         orm_mode = True
 
-
+mapper(ToDo, todo_t)
 
