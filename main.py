@@ -227,7 +227,7 @@ from database import engine, Base, SessionLocal
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_versioning import VersionedFastAPI, version
-from shemas import ToDo, Reps  # Adjust import based on actual filename
+from shemas import ToDo  # Adjust import based on actual filename
 
 Base.metadata.create_all(bind=engine)
 
@@ -251,6 +251,14 @@ async def read_root(request: Request):
 
 # API application
 api_app = FastAPI()
+
+api_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @api_app.post("/add")
 @version(1)
@@ -282,6 +290,7 @@ def delete_exercise(id: int):
 @api_app.get("/get/{task}", response_model=ToDo, responses={404: {"description": "Exercise not found"}})
 @version(1)
 def get_exercise(task: str):
+    """
     db = SessionLocal()
     try:
         todo = db.query(ToDo).filter_by(task=task).first()
@@ -290,16 +299,23 @@ def get_exercise(task: str):
         return todo
     finally:
         db.close()
+"""
+    return {"task": "Sample Task", "sets": 3, "reps": [2,3,4]}
+    
+
 
 @api_app.get("/list", response_model=list[ToDo], status_code=status.HTTP_200_OK)
 @version(1)
 def get_all_exercises():
+    """
     db = SessionLocal()
     try:
         exercises = db.query(ToDo).all()
         return exercises
     finally:
         db.close()
+    """
+    return {"status": "OK"}
 
 @api_app.delete("/delete/all")
 @version(1)
@@ -317,5 +333,7 @@ versioned_api_app = VersionedFastAPI(api_app, version_format='{major}', prefix_f
 
 # Main application combining static files and API
 app = FastAPI()
+
+app.mount("/api", api_app)
 app.mount("/", static_app)
-app.mount("/api", versioned_api_app)
+

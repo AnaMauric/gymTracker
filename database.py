@@ -7,7 +7,7 @@ Base = declarative_base()
 class ToDo(Base):
     __tablename__="todotable"
     id=Column(Integer, primary_key = True)
-    task = Column(String(50)) '''
+    task = Column(String(50)) ''' 
 
 from sqlalchemy import create_engine, Column, Integer, String, JSON
 from sqlalchemy.ext.declarative import declarative_base
