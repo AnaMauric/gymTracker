@@ -18,19 +18,13 @@ from pydantic import BaseModel
 from typing import List
 from sqlalchemy.orm import mapper 
 
-
-
 class ToDo(BaseModel):
     task: str
     sets: int
     reps: int
 
-
-class UserInDB(ToDo):
-    id: int
-
     class Config:
         orm_mode = True
 
-mapper(ToDo, todo_t)
+#mapper(ToDo, todo_t)
 
