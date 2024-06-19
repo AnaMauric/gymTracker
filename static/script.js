@@ -89,7 +89,7 @@ function logWorkout() {
     });
 
     // Define the API endpoint
-    const apiEndpoint = "http://212.101.137.108:8000/api/log-workout"; 
+    const apiEndpoint = "/api/log-workout"; 
 
     // Send a POST request to the API endpoint
     fetch(apiEndpoint, {
@@ -123,7 +123,8 @@ function deleteExercise() {
     }
 
     // Endpoint URL for deleting exercise
-    var endpoint = `http://212.101.137.108:8000/api/delete-exercise/${exerciseName}`;
+    var endpoint = `/api/delete-exercise/${exerciseName}`;
+
 
     // Fetch API request to delete exercise
     fetch(endpoint, {
@@ -163,7 +164,7 @@ function showExercise() {
     }
 
     // Endpoint URL for fetching exercise details
-    var endpoint = `http://212.101.137.108:8000/api/get-exercise/${exerciseName}`;
+    var endpoint = `/api/get-exercise/${exerciseName}`;
 
     // Fetch API request to get exercise details
     fetch(endpoint)
@@ -204,3 +205,4 @@ function resetInputFields() {
 document.addEventListener('DOMContentLoaded', function() {
     resetInputFields();
 });
+

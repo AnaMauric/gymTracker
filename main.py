@@ -139,8 +139,6 @@ Base.metadata.create_all(bind=engine)
 
 
 
-
-
 class Exercise(BaseModel):
     task: str 
     sets: int
