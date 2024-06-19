@@ -123,7 +123,6 @@ def get_all_todo():
 app = VersionedFastAPI(app, version_format='{major}', prefix_format="/v{major}")'''
 
 
-
 from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
